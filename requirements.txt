@@ -1,0 +1,8 @@
+Pillow == 8.3.1
+matplotlib == 3.5.1
+python_dotenv == 0.17.1
+flask == 2.0.2
+python-telegram-bot == 13.10
+azure-cognitiveservices-vision-computervision==0.7.0
+requests == 2.27.1
+
