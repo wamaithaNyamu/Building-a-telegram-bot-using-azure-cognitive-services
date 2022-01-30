@@ -25,7 +25,7 @@ def GetTextOcr(file_path):
     Takes in a file and does OCR on the document and returns a string
     of the text extracted during OCR.
     :param file_path:
-    :return: string
+
     """
     try:
         print("This function invokes the OCR API on", file_path)
@@ -68,7 +68,8 @@ def GetTextOcr(file_path):
             fig.savefig(outputfile)
             print('Results saved in', outputfile)
             # if there was no ocr decoded the results list will be empty
-        if len(results) == 0: print(f'{file_path} IMAGE WAS NOT OCRD')
+        if len(results) == 0:
+            print(f'{file_path} IMAGE WAS NOT OCRD')
 
 
     except Exception as ex:
@@ -80,7 +81,7 @@ def GetTextRead(file_path):
       Takes in a file and extracts handwritten or printed text
        on the document and returns a string of the text extracted during OCR.
       :param file_path:
-      :return: string
+
     """
     try:
         print("This function invokes the READ API on", file_path)
