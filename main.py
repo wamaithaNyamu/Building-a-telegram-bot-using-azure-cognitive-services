@@ -1,4 +1,24 @@
 import os
+import time
+from PIL import Image, ImageDraw
+from matplotlib import pyplot as plt
+
+# Import namespaces
+from azure.cognitiveservices.vision.computervision import ComputerVisionClient
+from azure.cognitiveservices.vision.computervision.models import OperationStatusCodes
+from msrest.authentication import CognitiveServicesCredentials
+
+from dotenv import load_dotenv
+
+# Get Configuration Settings
+load_dotenv()
+cog_endpoint = os.getenv('COG_SERVICE_ENDPOINT')
+cog_key = os.getenv('COG_SERVICE_KEY')
+
+# Authenticate Computer Vision client
+credential = CognitiveServicesCredentials(cog_key)
+cv_client = ComputerVisionClient(cog_endpoint, credential)
+
 
 
 def GetTextOcr(file_path):
@@ -47,6 +67,7 @@ def ask_user_for_input():
         elif command == '3':
             image_file = os.path.join('images', 'wams.png')
             GetTextRead(image_file)
+
 
     except Exception as ex:
         print(ex)
