@@ -40,7 +40,6 @@ def GetTextOcr(file_path):
 
         # All the words extracted will be stored as a list
         results = []
-        print(ocr_results)
         # Process the text line by line
         for region in ocr_results.regions:
             for line in region.lines:
@@ -139,4 +138,4 @@ def ask_user_for_input():
         print(ex)
 
 
-ask_user_for_input()
+# ask_user_for_input()
