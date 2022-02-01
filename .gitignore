@@ -2,3 +2,4 @@ venv
 venvAzureBot
 .env
 *-results
+__pycache__
