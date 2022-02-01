@@ -3,3 +3,4 @@ venvAzureBot
 .env
 *-results
 __pycache__
+.idea
