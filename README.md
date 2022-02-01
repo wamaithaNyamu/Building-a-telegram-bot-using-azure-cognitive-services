@@ -49,6 +49,13 @@ Telegram bot takes in a photo and gives back all the text on the photo
 
 Find a blog post on the same [here](https://wamaithanyamu.com/building-a-telegram-bot-that-extracts-text-from-images-and-documents)
 
+Create a .env and paste the following:
+
+```shell
+COG_SERVICE_ENDPOINT=your_azure_endpoint_goes_here
+COG_SERVICE_KEY=your_azure_key_goes_here
+TELEGRAM_TOKEN=your_telegram_token_goes_here
+```
 ```shell
 pip install -r requirements.txt
 ```
