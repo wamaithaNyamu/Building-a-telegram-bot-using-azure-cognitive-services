@@ -29,6 +29,7 @@ def GetTextOcr(file_path):
     """
     try:
         print("This function invokes the OCR API on", file_path)
+        print("This function invokes the OCR API on", file_path)
         # Use OCR API to read text in image
         with open(file_path, mode="rb") as image_data:
             ocr_results = cv_client.recognize_printed_text_in_stream(image_data)
@@ -72,7 +73,7 @@ def GetTextOcr(file_path):
 
 
     except Exception as ex:
-        print(ex)
+            print(ex)
 
 
 def GetTextRead(file_path):
@@ -124,7 +125,7 @@ def ask_user_for_input():
 
         command = input('Enter a number:')
         if command == '1':
-            file_path = os.path.join('images', 'abc.png')
+            file_path = os.path.join('images', 'wams.png')
             GetTextOcr(file_path)
         elif command == '2':
             file_path = os.path.join('images', 'story.pdf')

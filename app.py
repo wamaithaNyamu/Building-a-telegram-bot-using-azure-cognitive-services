@@ -6,6 +6,8 @@ from flask import Flask
 import requests
 from telegram.ext import Updater, MessageHandler, Filters
 from telegram.ext import CommandHandler
+
+# from our main.py
 from main import GetTextRead
 
 load_dotenv()
@@ -17,6 +19,22 @@ dispatcher = updater.dispatcher
 app = Flask(__name__)
 
 
+def file_handler(update):
+    try:
+        print(update.message)
+        file_id = ''
+        if len(update.message.photo) == 0 and update.message.document.file_id:
+            print("WE HAVE AN IMAGE", update.message.document.file_id)
+            file_id = update.message.document.file_id
+        elif len(update.message.photo) > 0:
+            print("WE HAVE AN IMAGE", update.message.photo[-1].file_id)
+            file_id = update.message.photo[-1].file_id
+
+        return file_id
+
+    except Exception as e:
+        print("Handler exception",e)
+
 @app.route('/')
 def extract_text_from_telegram(update, context):
     """
@@ -26,12 +44,14 @@ def extract_text_from_telegram(update, context):
     :return:
     """
     try:
-        print("Uploading to telegram ...")
-        file_id = update.message.photo[-1].file_id
-        file_name = ''
+
+        file_name =''
+        print("Uploading to telegram ...", )
+        file_id =  file_handler(update)
+        print("FILE ID", file_id)
 
         if file_id:
-            update.message.reply_text("Processing image...")
+            update.message.reply_text("Processing file...")
             file_path = f'https://api.telegram.org/bot{TELEGRAM_TOKEN}/getFile?file_id={file_id}'
             img = requests.get(file_path).json()
             img = img['result']['file_path']
@@ -76,10 +96,6 @@ def extract_text_from_telegram(update, context):
         update.message.reply_text("Upload an image with text")
         print(ex)
 
-    except Exception as ex:
-        update.message.reply_text("Upload an image with text")
-        print(ex)
-
 
 # set up the introductory statement for the bot when the /start command is invoked
 def start(update, context):
@@ -92,13 +108,7 @@ def start(update, context):
     try:
         chat_id = update.effective_chat.id
         context.bot.send_message(chat_id=chat_id,
-                                 text="Hello there, Wamaitha here. Thank you for registering for the event. \n"
-                                      "This bot takes in a photo and applies the azure cognitive service to extract "
-                                      "printed or handwritten text from images or pdfs. Have fun while at it! \n "
-                                      "Connect with me  :\n"
-                                      "Linkedin : https://www.linkedin.com/in/wamaithanyamu/\n"
-                                      "Github : https://github.com/wamaithaNyamu \n"
-                                      "Twitter : https://twitter.com/wamaithaNyamu \n")
+                                 text="Demo time!!!")
 
 
     except Exception as ex:
