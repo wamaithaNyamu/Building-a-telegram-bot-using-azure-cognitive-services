@@ -29,7 +29,6 @@ def file_handler(update):
         elif len(update.message.photo) > 0:
             print("WE HAVE AN IMAGE", update.message.photo[-1].file_id)
             file_id = update.message.photo[-1].file_id
-
         return file_id
 
     except Exception as e:
@@ -119,8 +118,14 @@ def start(update, context):
 dispatcher.add_handler(CommandHandler("start", start))
 
 dispatcher.add_handler(MessageHandler(Filters.all, extract_text_from_telegram))
-updater.start_polling()
+# updater.start_polling() <--- comment this out
 
-# print
+# add the webhook code
+updater.start_webhook(listen="0.0.0.0",
+                      port=int(os.environ.get('PORT', 8080)),
+                      url_path=TELEGRAM_TOKEN,
+                      webhook_url=os.getenv('BOT_URL') + TELEGRAM_TOKEN
+                      )
+
 if __name__ == '__main__':
     app.run(debug=True)
