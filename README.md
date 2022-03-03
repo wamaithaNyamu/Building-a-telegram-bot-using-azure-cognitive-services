@@ -55,6 +55,9 @@ Create a .env and paste the following:
 COG_SERVICE_ENDPOINT=your_azure_endpoint_goes_here
 COG_SERVICE_KEY=your_azure_key_goes_here
 TELEGRAM_TOKEN=your_telegram_token_goes_here
+BOT_URL=your_heroku_url_goes_here
+PORT=5000
+
 ```
 ```shell
 pip install -r requirements.txt
