@@ -1,6 +1,4 @@
 import os
-import pathlib
-
 from dotenv import load_dotenv
 from flask import Flask
 import requests
@@ -35,7 +33,8 @@ def file_handler(update):
         return file_id
 
     except Exception as e:
-        print("Handler exception",e)
+        print("Handler exception", e)
+
 
 @app.route('/')
 def extract_text_from_telegram(update, context):
@@ -47,9 +46,8 @@ def extract_text_from_telegram(update, context):
     """
     try:
 
-        file_name =''
         print("Uploading to telegram ...", )
-        file_id =  file_handler(update)
+        file_id = file_handler(update)
 
         print("FILE ID", file_id)
 
@@ -58,28 +56,16 @@ def extract_text_from_telegram(update, context):
             file_path = f'https://api.telegram.org/bot{TELEGRAM_TOKEN}/getFile?file_id={file_id}'
             img = requests.get(file_path).json()
             img = img['result']['file_path']
-            # img path: photos/file_35.jpg
-            print("img path:", img)
+
             file_image = f'https://api.telegram.org/file/bot{TELEGRAM_TOKEN}/{img}'
             response = requests.get(file_image)
 
+            img_name = img.rsplit('/', 1)[-1]
 
-            # split_img path: file_35.jpg
-            split_img = img.rsplit('/', 1)[-1]
-            print("split_img path:", split_img)
-
-            # File Extension:  .jpg
-            file_extension = pathlib.Path(split_img).suffix
-            print("File Extension: ", file_extension)
-            # file_35.jpg-AgACAgQAAxkBAAIBS2H5FN20IK2ArluFlw_E_MiY2bw.jpg
-
-
-            file = open(f'{split_img}', "wb")
+            file = open(f'{img_name}', "wb")
             file.write(response.content)
             file.close()
-            print('FILEEE NAME IN FLASK',split_img)
-            user_image_text_results = GetTextRead(split_img)
-            print("results--------------------------:", user_image_text_results)
+            user_image_text_results = GetTextRead(img_name)
             if len(user_image_text_results) > 0:
                 results = ' '.join(str(e) for e in user_image_text_results)
                 print(results)
@@ -87,18 +73,19 @@ def extract_text_from_telegram(update, context):
                 update.message.reply_text(results)
             else:
                 update.message.reply_text(
-                    "Unfortunately, this image does not contain any printed or handwritten text. ")
+                    "Unfortunately, this image or document does not contain any printed or handwritten text. ")
 
         else:
-            update.message.reply_text("Upload an image with text")
+            update.message.reply_text("Upload an image or document with text")
 
-        if os.path.exists(split_img):
-            os.remove(split_img)
-            print(split_img, ' deleted!')
+        if os.path.exists(img_name):
+            os.remove(img_name)
+            print(img_name, ' deleted!')
         else:
-            print(f"The file {split_img} does not exist")
+            print(f"The file {img_name} does not exist")
+
     except Exception as ex:
-        update.message.reply_text("Upload an image with text")
+        update.message.reply_text(f'Something went wrong contact admin')
         print(ex)
 
 
@@ -124,14 +111,14 @@ def start(update, context):
 dispatcher.add_handler(CommandHandler("start", start))
 
 dispatcher.add_handler(MessageHandler(Filters.all, extract_text_from_telegram))
-updater.start_polling()
+# updater.start_polling()
 
 # add the webhook code
-# updater.start_webhook(listen="0.0.0.0",
-#                       port=int(os.environ.get('PORT', 8080)),
-#                       url_path=TELEGRAM_TOKEN,
-#                       webhook_url=os.getenv('BOT_URL') + TELEGRAM_TOKEN
-#                       )
+updater.start_webhook(listen="0.0.0.0",
+                      port=int(os.environ.get('PORT', 8080)),
+                      url_path=TELEGRAM_TOKEN,
+                      webhook_url=os.getenv('BOT_URL') + TELEGRAM_TOKEN
+                      )
 
 if __name__ == '__main__':
     app.run(debug=True)
