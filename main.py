@@ -89,10 +89,6 @@ def GetTextRead(file_path):
         with open(file_path, mode="rb") as image_data:
             read_op = cv_client.read_in_stream(image_data, raw=True)
 
-        # Prepare image for drawing
-        fig = plt.figure(figsize=(7, 7))
-        img = Image.open(file_path)
-        draw = ImageDraw.Draw(img)
         # Get the async operation ID so we can check for the results
         operation_location = read_op.headers["Operation-Location"]
         operation_id = operation_location.split("/")[-1]
@@ -109,28 +105,8 @@ def GetTextRead(file_path):
             for page in read_results.analyze_result.read_results:
                 for line in page.lines:
                     print(line.text)
-                    bb= [str(int(x)) for x in line.bounding_box]
-                    print(bb)
-
-                    bb = [bb[0],bb[2],bb[7],bb[4]]
-                    print(bb)
-
-                    l, t, w, h = list(map(int, bb))
-                    draw.rectangle(((l, t), (l + w, t + h)), outline='magenta', width=5)
-
                     results.append(line.text)
         print('Reading text in {}\n'.format(file_path))
-        # Save the image with the text locations highlighted if the image was ocrd
-        if len(results) > 0:
-            plt.axis('off')
-            plt.imshow(img)
-            # create output folder if doesnt exist
-            if not os.path.exists('read-results'):
-                os.makedirs('read-results')
-            file_path = file_path.rsplit('\\', 1)[-1].rsplit('.', 1)[0]
-            outputfile = f'read-results\\{file_path}-read_results.jpg'
-            fig.savefig(outputfile)
-            print('Results saved in', outputfile)
 
         return results
     except Exception as ex:
@@ -163,4 +139,4 @@ def ask_user_for_input():
         print(ex)
 
 
-ask_user_for_input()
+# ask_user_for_input()

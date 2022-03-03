@@ -23,12 +23,15 @@ def file_handler(update):
     try:
         print(update.message)
         file_id = ''
+
         if len(update.message.photo) == 0 and update.message.document.file_id:
-            print("WE HAVE AN IMAGE", update.message.document.file_id)
+            print("WE HAVE A DOCUMENT", update.message.document.file_id)
             file_id = update.message.document.file_id
+
         elif len(update.message.photo) > 0:
             print("WE HAVE AN IMAGE", update.message.photo[-1].file_id)
             file_id = update.message.photo[-1].file_id
+
         return file_id
 
     except Exception as e:
@@ -47,6 +50,7 @@ def extract_text_from_telegram(update, context):
         file_name =''
         print("Uploading to telegram ...", )
         file_id =  file_handler(update)
+
         print("FILE ID", file_id)
 
         if file_id:
@@ -58,6 +62,8 @@ def extract_text_from_telegram(update, context):
             print("img path:", img)
             file_image = f'https://api.telegram.org/file/bot{TELEGRAM_TOKEN}/{img}'
             response = requests.get(file_image)
+
+
             # split_img path: file_35.jpg
             split_img = img.rsplit('/', 1)[-1]
             print("split_img path:", split_img)
@@ -66,14 +72,14 @@ def extract_text_from_telegram(update, context):
             file_extension = pathlib.Path(split_img).suffix
             print("File Extension: ", file_extension)
             # file_35.jpg-AgACAgQAAxkBAAIBS2H5FN20IK2ArluFlw_E_MiY2bw.jpg
-            file_name = f'{split_img}-{file_id}.{file_extension}'
 
-            file = open(f'{file_name}', "wb")
+
+            file = open(f'{split_img}', "wb")
             file.write(response.content)
             file.close()
-
-            user_image_text_results = GetTextRead(file_name)
-            print("results:", user_image_text_results)
+            print('FILEEE NAME IN FLASK',split_img)
+            user_image_text_results = GetTextRead(split_img)
+            print("results--------------------------:", user_image_text_results)
             if len(user_image_text_results) > 0:
                 results = ' '.join(str(e) for e in user_image_text_results)
                 print(results)
@@ -86,11 +92,11 @@ def extract_text_from_telegram(update, context):
         else:
             update.message.reply_text("Upload an image with text")
 
-        if os.path.exists(file_name):
-            os.remove(file_name)
-            print(file_name, ' deleted!')
+        if os.path.exists(split_img):
+            os.remove(split_img)
+            print(split_img, ' deleted!')
         else:
-            print(f"The file {file_name} does not exist")
+            print(f"The file {split_img} does not exist")
     except Exception as ex:
         update.message.reply_text("Upload an image with text")
         print(ex)
@@ -118,14 +124,14 @@ def start(update, context):
 dispatcher.add_handler(CommandHandler("start", start))
 
 dispatcher.add_handler(MessageHandler(Filters.all, extract_text_from_telegram))
-# updater.start_polling() <--- comment this out
+updater.start_polling()
 
 # add the webhook code
-updater.start_webhook(listen="0.0.0.0",
-                      port=int(os.environ.get('PORT', 8080)),
-                      url_path=TELEGRAM_TOKEN,
-                      webhook_url=os.getenv('BOT_URL') + TELEGRAM_TOKEN
-                      )
+# updater.start_webhook(listen="0.0.0.0",
+#                       port=int(os.environ.get('PORT', 8080)),
+#                       url_path=TELEGRAM_TOKEN,
+#                       webhook_url=os.getenv('BOT_URL') + TELEGRAM_TOKEN
+#                       )
 
 if __name__ == '__main__':
     app.run(debug=True)
