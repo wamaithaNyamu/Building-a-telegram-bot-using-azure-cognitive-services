@@ -203,14 +203,14 @@ dispatcher.add_handler(CommandHandler("start", start))
 dispatcher.add_handler(CommandHandler("delete", delete_pdf))
 
 dispatcher.add_handler(MessageHandler(Filters.all, extract_text_from_telegram))
-updater.start_polling()
+# updater.start_polling()
 
 # add the webhook code
-# updater.start_webhook(listen="0.0.0.0",
-#                       port=int(os.environ.get('PORT', 8080)),
-#                       url_path=TELEGRAM_TOKEN,
-#                       webhook_url=os.getenv('BOT_URL') + TELEGRAM_TOKEN
-#                       )
+updater.start_webhook(listen="0.0.0.0",
+                      port=int(os.environ.get('PORT', 8080)),
+                      url_path=TELEGRAM_TOKEN,
+                      webhook_url=os.getenv('BOT_URL') + TELEGRAM_TOKEN
+                      )
 
 if __name__ == '__main__':
     app.run(debug=True)
