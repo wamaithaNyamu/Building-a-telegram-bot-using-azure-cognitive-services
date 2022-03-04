@@ -10,7 +10,10 @@ import os
 from main import GetTextRead
 from write_to_pdf import add_to_pdf
 load_dotenv()
-
+# server settings
+HOST = '127.0.0.1'
+PORT = int(os.environ.get('PORT', 5000))
+DEBUG_MODE = True
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 updater = Updater(token=TELEGRAM_TOKEN, use_context=True)
 dispatcher = updater.dispatcher
@@ -155,11 +158,11 @@ dispatcher.add_handler(MessageHandler(Filters.all, extract_text_from_telegram))
 
 # add the webhook code
 updater.start_webhook(listen="0.0.0.0",
-                      port=int(os.environ.get('PORT', 5001)),
+                      port=int(os.environ.get('PORT', 5000)),
                       url_path=TELEGRAM_TOKEN,
                       webhook_url=os.getenv('BOT_URL') + TELEGRAM_TOKEN
                       )
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=DEBUG_MODE, host=HOST, port=PORT)
