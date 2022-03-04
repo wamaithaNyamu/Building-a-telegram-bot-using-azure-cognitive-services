@@ -24,29 +24,6 @@ def get_username(update):
     return user['username']
 
 
-def delete_pdf(context, update):
-    username = str(get_username(update))
-    pdf_name = f'{username}.pdf'
-
-    if os.path.exists(pdf_name):
-        os.remove(pdf_name)
-        print(pdf_name, ' deleted!')
-        chat_id = update.effective_chat.id
-        context.bot.send_message(chat_id=chat_id,
-                                 text="Existing pdf deleted.")
-
-    else:
-        chat_id = update.effective_chat.id
-        context.bot.send_message(chat_id=chat_id,
-                                 text="You do not have any PDF's on file")
-
-        print(f"The file {pdf_name} does not exist")
-
-
-
-
-
-
 
 def file_handler(update):
     try:
@@ -106,12 +83,13 @@ def extract_text_from_telegram(update, context):
                 update.message.reply_text("Saving results to pdf ...")
 
                 #     add to pdf
-                username = str(get_username(update))
-                pdf_name = f'{username}.pdf'
+
+                chat_id = update.effective_chat.id
+                pdf_name = f'{chat_id}.pdf'
 
                 pdf_name = add_to_pdf(pdf_name, user_image_text_results)
                 update.message.reply_text("Added to pdf")
-                chat_id = update.effective_chat.id
+
                 document = open(pdf_name, 'rb')
                 context.bot.send_document(chat_id, document)
 
@@ -146,7 +124,23 @@ def start(update, context):
 
         chat_id = update.effective_chat.id
         context.bot.send_message(chat_id=chat_id,
-                                 text="Demo time!!!")
+                                 text="Start command sequence began..")
+
+        pdf_name = f'{chat_id}.pdf'
+
+        if os.path.exists(pdf_name):
+            os.remove(pdf_name)
+            print(pdf_name, ' deleted!')
+
+            context.bot.send_message(chat_id=chat_id,
+                                     text="Existing pdf deleted.")
+
+        else:
+
+            context.bot.send_message(chat_id=chat_id,
+                                     text="You do not have any PDF's on file")
+
+            print(f"The file {pdf_name} does not exist")
 
 
     except Exception as ex:
@@ -155,7 +149,6 @@ def start(update, context):
 
 # run the start function when the user invokes the /start command
 dispatcher.add_handler(CommandHandler("start", start))
-dispatcher.add_handler(CommandHandler("delete", delete_pdf))
 
 dispatcher.add_handler(MessageHandler(Filters.all, extract_text_from_telegram))
 # updater.start_polling()
