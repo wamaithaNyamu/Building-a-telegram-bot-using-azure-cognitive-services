@@ -157,7 +157,7 @@ dispatcher.add_handler(MessageHandler(Filters.all, extract_text_from_telegram))
 
 # add the webhook code
 updater.start_webhook(listen="0.0.0.0",
-                      port=7070,
+                      port=int(os.environ.get('PORT',33507)),
                       url_path=TELEGRAM_TOKEN,
                       webhook_url=os.getenv('BOT_URL') + TELEGRAM_TOKEN
                       )
