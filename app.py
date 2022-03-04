@@ -163,5 +163,5 @@ updater.start_webhook(listen="0.0.0.0",
                       )
 
 
-if __name__ == '__main__':
-    app.run(debug=DEBUG_MODE)
+# if __name__ == '__main__':
+#     app.run(debug=DEBUG_MODE)
