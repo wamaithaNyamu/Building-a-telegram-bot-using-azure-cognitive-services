@@ -3,3 +3,5 @@ flask == 2.0.2
 python-telegram-bot == 13.10
 azure-cognitiveservices-vision-computervision==0.7.0
 requests == 2.27.1
+fpdf==1.7.2
+PyPDF2==1.26.0
