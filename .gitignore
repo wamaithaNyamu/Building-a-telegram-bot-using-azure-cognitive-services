@@ -4,3 +4,9 @@ venvAzureBot
 *-results
 __pycache__
 .idea
+font
+DejaVuSansCondensed.cw127.pkl
+DejaVuSansCondensed.pkl
+DejaVuSansCondensed.ttf
+file_*
+*.pdf

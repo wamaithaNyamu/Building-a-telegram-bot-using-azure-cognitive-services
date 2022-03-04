@@ -1,11 +1,13 @@
-import os
 from dotenv import load_dotenv
 from flask import Flask
 import requests
 from telegram.ext import Updater, MessageHandler, Filters
 from telegram.ext import CommandHandler
+from fpdf import FPDF
+import PyPDF2
+import os
+import random
 
-# from our main.py
 from main import GetTextRead
 
 load_dotenv()
@@ -15,6 +17,80 @@ updater = Updater(token=TELEGRAM_TOKEN, use_context=True)
 dispatcher = updater.dispatcher
 
 app = Flask(__name__)
+
+
+def get_username(update):
+    user = update.message.from_user
+    print('You talk with user {} and their user ID: {} '.format(user['username'], user['id']))
+    return user['username']
+
+
+def delete_pdf(context, update):
+    username = str(get_username(update))
+    pdf_name = f'{username}.pdf'
+
+    if os.path.exists(pdf_name):
+        os.remove(pdf_name)
+        print(pdf_name, ' deleted!')
+        chat_id = update.effective_chat.id
+        context.bot.send_message(chat_id=chat_id,
+                                 text="Existing pdf deleted.")
+
+    else:
+        chat_id = update.effective_chat.id
+        context.bot.send_message(chat_id=chat_id,
+                                 text="You do not have any PDF's on file")
+
+        print(f"The file {pdf_name} does not exist")
+
+
+
+
+intro=["PDF generated from images"]
+
+
+def save_to_pdf(pdf_name,results):
+
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font('Arial', '', 12)
+    r = ' '.join(str(e) for e in results)
+    for t in r.split('\n'):
+        pdf.write(8, t)
+        pdf.ln(8)
+    pdf.output(pdf_name, 'F')
+
+
+def add_to_pdf(pdf_name,results):
+    if not os.path.exists(pdf_name):
+        save_to_pdf(pdf_name,intro)
+        pdf1File = open(pdf_name, 'rb')
+    else:
+        pdf1File = open(pdf_name, 'rb')
+
+    temp = f'{random.randint(0,10000)}.pdf '
+    print("TEEEMMMMPPP",temp)
+    save_to_pdf(temp, results)
+
+    pdf2File = open(temp, 'rb')
+    pdf1Reader = PyPDF2.PdfFileReader(pdf1File)
+    pdf2Reader = PyPDF2.PdfFileReader(pdf2File)
+    pdfWriter = PyPDF2.PdfFileWriter()
+
+    for pageNum in range(pdf1Reader.numPages):
+        pageObj = pdf1Reader.getPage(pageNum)
+        pdfWriter.addPage(pageObj)
+    for pageNum in range(pdf2Reader.numPages):
+        pageObj = pdf2Reader.getPage(pageNum)
+        pdfWriter.addPage(pageObj)
+
+    pdfOutputFile = open(pdf_name, 'wb')
+    pdfWriter.write(pdfOutputFile)
+    pdfOutputFile.close()
+    pdf1File.close()
+    pdf2File.close()
+    os.remove(temp)
+
 
 
 def file_handler(update):
@@ -39,7 +115,6 @@ def file_handler(update):
 @app.route('/')
 def extract_text_from_telegram(update, context):
     """
-
     :param update: checks for updates from telegram
     :param context:
     :return:
@@ -48,7 +123,7 @@ def extract_text_from_telegram(update, context):
 
         print("Uploading to telegram ...", )
         file_id = file_handler(update)
-
+        img_name = ''
         print("FILE ID", file_id)
 
         if file_id:
@@ -65,12 +140,27 @@ def extract_text_from_telegram(update, context):
             file = open(f'{img_name}', "wb")
             file.write(response.content)
             file.close()
+
             user_image_text_results = GetTextRead(img_name)
+
             if len(user_image_text_results) > 0:
                 results = ' '.join(str(e) for e in user_image_text_results)
                 print(results)
                 update.message.reply_text("Thank you for your patience. This is what I extracted:")
                 update.message.reply_text(results)
+                update.message.reply_text("Saving results to pdf ...")
+
+                #     add to pdf
+                username = str(get_username(update))
+                pdf_name = f'{username}.pdf'
+
+                pdf_name = add_to_pdf(pdf_name, user_image_text_results)
+                update.message.reply_text("Added to pdf")
+                chat_id = update.effective_chat.id
+                document = open(pdf_name, 'rb')
+                context.bot.send_document(chat_id, document)
+
+
             else:
                 update.message.reply_text(
                     "Unfortunately, this image or document does not contain any printed or handwritten text. ")
@@ -98,6 +188,7 @@ def start(update, context):
     :return:
     """
     try:
+
         chat_id = update.effective_chat.id
         context.bot.send_message(chat_id=chat_id,
                                  text="Demo time!!!")
@@ -109,16 +200,17 @@ def start(update, context):
 
 # run the start function when the user invokes the /start command
 dispatcher.add_handler(CommandHandler("start", start))
+dispatcher.add_handler(CommandHandler("delete", delete_pdf))
 
 dispatcher.add_handler(MessageHandler(Filters.all, extract_text_from_telegram))
-# updater.start_polling()
+updater.start_polling()
 
 # add the webhook code
-updater.start_webhook(listen="0.0.0.0",
-                      port=int(os.environ.get('PORT', 8080)),
-                      url_path=TELEGRAM_TOKEN,
-                      webhook_url=os.getenv('BOT_URL') + TELEGRAM_TOKEN
-                      )
+# updater.start_webhook(listen="0.0.0.0",
+#                       port=int(os.environ.get('PORT', 8080)),
+#                       url_path=TELEGRAM_TOKEN,
+#                       webhook_url=os.getenv('BOT_URL') + TELEGRAM_TOKEN
+#                       )
 
 if __name__ == '__main__':
     app.run(debug=True)
