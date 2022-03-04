@@ -11,8 +11,7 @@ from main import GetTextRead
 from write_to_pdf import add_to_pdf
 load_dotenv()
 # server settings
-HOST = '127.0.0.1'
-PORT = int(os.environ.get('PORT', 5000))
+
 DEBUG_MODE = True
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 updater = Updater(token=TELEGRAM_TOKEN, use_context=True)
@@ -165,4 +164,4 @@ updater.start_webhook(listen="0.0.0.0",
 
 
 if __name__ == '__main__':
-    app.run(debug=DEBUG_MODE, host=HOST, port=PORT)
+    app.run(debug=DEBUG_MODE)
