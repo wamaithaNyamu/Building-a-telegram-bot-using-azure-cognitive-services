@@ -23,9 +23,12 @@ def save_to_pdf(pdf_name,results):
 
 def add_to_pdf(pdf_name,results):
     if not os.path.exists(pdf_name):
-        save_to_pdf(pdf_name,intro)
+        save_to_pdf(pdf_name, intro)
         pdf1File = open(pdf_name, 'rb')
-    temp = f'{random.randint(0,100)}.pdf '
+    else:
+        pdf1File = open(pdf_name, 'rb')
+    temp = f'{str(random.randint(0, 10000))}-temp.pdf '
+    print("TEEEMMMMPPP", temp, type(temp))
     save_to_pdf(temp, results)
 
     pdf2File = open(temp, 'rb')
@@ -46,5 +49,6 @@ def add_to_pdf(pdf_name,results):
     pdf1File.close()
     pdf2File.close()
     os.remove(temp)
+    return pdf_name
 
-add_to_pdf("Hey.pdf",x)
+# add_to_pdf("wamaitha.pdf",x)
