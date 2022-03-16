@@ -18,7 +18,6 @@ credential = CognitiveServicesCredentials(cog_key)
 cv_client = ComputerVisionClient(cog_endpoint, credential)
 
 
-# https://stackoverflow.com/questions/50576426/microsoft-azure-cognitive-services-handwriting-detection-bounding-box-parameters
 def GetTextRead(file_path):
     """
       Takes in a file and extracts handwritten or printed text
@@ -54,5 +53,15 @@ def GetTextRead(file_path):
         return results
     except Exception as ex:
         print(ex)
+
+
+
+# GetTextRead("./images/abc.png")
+
+
+
+
+
+
 
 

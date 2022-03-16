@@ -1,30 +1,26 @@
+import requests
+import os
 from dotenv import load_dotenv
 from flask import Flask
-import requests
+
+# telegram
 from telegram.ext import Updater, MessageHandler, Filters
 from telegram.ext import CommandHandler
 
-import os
-
-
+# OCR API function from main.py
 from main import GetTextRead
+# writing to pdf from write_to_pdf.py
 from write_to_pdf import add_to_pdf
-load_dotenv()
-# server settings
 
+load_dotenv()
+
+# server settings
 DEBUG_MODE = True
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 updater = Updater(token=TELEGRAM_TOKEN, use_context=True)
 dispatcher = updater.dispatcher
 
 app = Flask(__name__)
-
-
-def get_username(update):
-    user = update.message.from_user
-    print('You talk with user {} and their user ID: {} '.format(user['username'], user['id']))
-    return user['username']
-
 
 
 def file_handler(update):
@@ -153,7 +149,8 @@ def start(update, context):
 dispatcher.add_handler(CommandHandler("start", start))
 
 dispatcher.add_handler(MessageHandler(Filters.all, extract_text_from_telegram))
-# updater.start_polling()
+updater.start_polling()
+
 
 # add the webhook code
 updater.start_webhook(listen="0.0.0.0",
@@ -162,6 +159,3 @@ updater.start_webhook(listen="0.0.0.0",
                       webhook_url=os.getenv('BOT_URL') + TELEGRAM_TOKEN
                       )
 
-
-# if __name__ == '__main__':
-#     app.run(debug=DEBUG_MODE)

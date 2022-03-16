@@ -2,15 +2,11 @@ from fpdf import FPDF
 import PyPDF2
 import os
 import random
-x = [
-    "The Board of Elementary and Secondary Education shall provide leadershi and create policies for education that expand opportunities for children, empower families and communities, and advance Louisiana in an increasingly competitive global market. BOARD of ELEMENTARY and SECONDARY EDUCATION ",
-    "hey", "I LOVE YOU", "CHOOKKssss", "something else begins right here with this guy!"]
 
-intro=["PDF generated from images"]
+intro = ["PDF generated from images"]
 
 
-def save_to_pdf(pdf_name,results):
-
+def save_to_pdf(pdf_name, results):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font('Arial', '', 12)
@@ -21,14 +17,15 @@ def save_to_pdf(pdf_name,results):
     pdf.output(pdf_name, 'F')
 
 
-def add_to_pdf(pdf_name,results):
+def add_to_pdf(pdf_name, results):
     if not os.path.exists(pdf_name):
+        # create pdf
         save_to_pdf(pdf_name, intro)
         pdf1File = open(pdf_name, 'rb')
     else:
+        # read existing pdf
         pdf1File = open(pdf_name, 'rb')
-    temp = f'{str(random.randint(0, 10000))}-temp.pdf '
-    print("TEEEMMMMPPP", temp, type(temp))
+    temp = f'{str(random.randint(0, 200))}-temp.pdf '
     save_to_pdf(temp, results)
 
     pdf2File = open(temp, 'rb')
@@ -51,4 +48,4 @@ def add_to_pdf(pdf_name,results):
     os.remove(temp)
     return pdf_name
 
-# add_to_pdf("wamaitha.pdf",x)
+# add_to_pdf("wamaitha.pdf",["This is a test"])
