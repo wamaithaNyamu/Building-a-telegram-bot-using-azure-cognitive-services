@@ -49,6 +49,7 @@ Telegram bot takes in a photo and gives back all the text on the photo
 
 Find a blog post on the same [here](https://wamaithanyamu.com/building-a-telegram-bot-that-extracts-text-from-images-and-documents)
 
+[![AI Powered telegram bot that turns your handwritten notes into one PDF](https://yt-embed.herokuapp.com/embed?v=sLQkK_jTvwA)](https://www.youtube.com/watch?v=sLQkK_jTvwA "AI Powered telegram bot that turns your handwritten notes into one PDF.")
 Create a .env and paste the following:
 
 ```shell
